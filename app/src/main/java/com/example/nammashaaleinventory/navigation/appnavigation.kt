@@ -4,11 +4,15 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.nammashaaleinventory.ui.screens.AddAssetScreen
 import com.example.nammashaaleinventory.ui.screens.AssetListScreen
 import com.example.nammashaaleinventory.ui.screens.DashboardScreen
+import com.example.nammashaaleinventory.ui.screens.EditAssetScreen
 import com.example.nammashaaleinventory.ui.screens.LoginScreen
+import com.example.nammashaaleinventory.ui.screens.SettingsScreen
+import com.example.nammashaaleinventory.ui.screens.SignupScreen
 import com.example.nammashaaleinventory.ui.screens.SplashScreen
-import com.example.nammashaaleinventory.ui.screens.AddAssetScreen
+
 @Composable
 fun AppNavigation() {
 
@@ -27,6 +31,10 @@ fun AppNavigation() {
             LoginScreen(navController)
         }
 
+        composable("signup") {
+            SignupScreen(navController)
+        }
+
         composable("dashboard") {
             DashboardScreen(navController)
         }
@@ -34,8 +42,43 @@ fun AppNavigation() {
         composable("assets") {
             AssetListScreen(navController)
         }
+
         composable("add_asset") {
             AddAssetScreen(navController)
+        }
+
+        composable("settings") {
+            SettingsScreen(navController)
+        }
+
+        composable(
+            "edit_asset/{assetId}/{name}/{category}/{serial}/{location}/{notes}/{status}"
+        ) { backStackEntry ->
+
+            EditAssetScreen(
+                navController = navController,
+
+                assetId = backStackEntry.arguments
+                    ?.getString("assetId") ?: "",
+
+                name = backStackEntry.arguments
+                    ?.getString("name") ?: "",
+
+                category = backStackEntry.arguments
+                    ?.getString("category") ?: "",
+
+                serial = backStackEntry.arguments
+                    ?.getString("serial") ?: "",
+
+                location = backStackEntry.arguments
+                    ?.getString("location") ?: "",
+
+                notes = backStackEntry.arguments
+                    ?.getString("notes") ?: "",
+
+                status = backStackEntry.arguments
+                    ?.getString("status") ?: ""
+            )
         }
     }
 }

@@ -17,7 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController) {
+fun SignupScreen(navController: NavController) {
 
     var email by remember {
         mutableStateOf("")
@@ -27,24 +27,15 @@ fun LoginScreen(navController: NavController) {
         mutableStateOf("")
     }
 
+    var confirmPassword by remember {
+        mutableStateOf("")
+    }
+
     var errorMessage by remember {
         mutableStateOf("")
     }
 
     val auth = FirebaseAuth.getInstance()
-
-    LaunchedEffect(Unit) {
-
-        if (auth.currentUser != null) {
-
-            navController.navigate("dashboard") {
-
-                popUpTo("login") {
-                    inclusive = true
-                }
-            }
-        }
-    }
 
     Box(
         modifier = Modifier
@@ -67,7 +58,7 @@ fun LoginScreen(navController: NavController) {
         ) {
 
             Text(
-                text = "Namma Shaale",
+                text = "Create Account 🚀",
                 style = MaterialTheme.typography.headlineLarge,
                 color = Color.White,
                 fontWeight = FontWeight.Bold
@@ -76,9 +67,8 @@ fun LoginScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Smart School Asset Management",
-                color = Color.White.copy(alpha = 0.9f),
-                style = MaterialTheme.typography.bodyLarge
+                text = "Start managing school assets smartly",
+                color = Color.White.copy(alpha = 0.9f)
             )
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -101,7 +91,7 @@ fun LoginScreen(navController: NavController) {
                 ) {
 
                     Text(
-                        text = "Welcome Back 👋",
+                        text = "Sign Up",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
@@ -109,7 +99,7 @@ fun LoginScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Login to continue managing assets",
+                        text = "Create your account to continue",
                         color = Color.Gray
                     )
 
@@ -142,30 +132,52 @@ fun LoginScreen(navController: NavController) {
                         shape = RoundedCornerShape(18.dp)
                     )
 
+                    Spacer(modifier = Modifier.height(18.dp))
+
+                    OutlinedTextField(
+                        value = confirmPassword,
+                        onValueChange = {
+                            confirmPassword = it
+                        },
+                        label = {
+                            Text("Confirm Password")
+                        },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(18.dp)
+                    )
+
                     Spacer(modifier = Modifier.height(28.dp))
 
                     Button(
                         onClick = {
 
-                            auth.signInWithEmailAndPassword(
-                                email,
-                                password
-                            ).addOnCompleteListener {
+                            if (password != confirmPassword) {
 
-                                if (it.isSuccessful) {
+                                errorMessage = "Passwords do not match"
 
-                                    navController.navigate("dashboard") {
+                            } else {
 
-                                        popUpTo("login") {
-                                            inclusive = true
+                                auth.createUserWithEmailAndPassword(
+                                    email,
+                                    password
+                                ).addOnCompleteListener {
+
+                                    if (it.isSuccessful) {
+
+                                        navController.navigate("dashboard") {
+
+                                            popUpTo("signup") {
+                                                inclusive = true
+                                            }
                                         }
+
+                                    } else {
+
+                                        errorMessage =
+                                            it.exception?.message
+                                                ?: "Signup Failed"
                                     }
-
-                                } else {
-
-                                    errorMessage =
-                                        it.exception?.message
-                                            ?: "Login Failed"
                                 }
                             }
                         },
@@ -179,7 +191,7 @@ fun LoginScreen(navController: NavController) {
                     ) {
 
                         Text(
-                            text = "Login",
+                            text = "Create Account",
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
@@ -202,16 +214,16 @@ fun LoginScreen(navController: NavController) {
                     ) {
 
                         Text(
-                            text = "Don't have an account?"
+                            text = "Already have an account?"
                         )
 
                         TextButton(
                             onClick = {
-                                navController.navigate("signup")
+                                navController.navigate("login")
                             }
                         ) {
 
-                            Text("Sign Up")
+                            Text("Login")
                         }
                     }
                 }

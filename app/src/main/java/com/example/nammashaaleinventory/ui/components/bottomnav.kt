@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
@@ -49,6 +50,19 @@ fun BottomNavBar(navController: NavController) {
             },
             label = {
                 Text("Add")
+            }
+        )
+
+        NavigationBarItem(
+            selected = false,
+            onClick = {
+                navController.navigate("settings")
+            },
+            icon = {
+                Icon(Icons.Default.Settings, contentDescription = "Settings")
+            },
+            label = {
+                Text("Settings")
             }
         )
     }

@@ -11,28 +11,51 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import kotlinx.coroutines.launch
-import com.example.nammashaaleinventory.model.AssetData
 import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddAssetScreen(navController: NavController) {
+fun EditAssetScreen(
+    navController: NavController,
+    assetId: String,
+    name: String,
+    category: String,
+    serial: String,
+    location: String,
+    notes: String,
+    status: String
+) {
 
-    var assetName by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf("Sports") }
-    var serialNumber by remember { mutableStateOf("") }
-    var location by remember { mutableStateOf("") }
-    var notes by remember { mutableStateOf("") }
+    var assetName by remember {
+        mutableStateOf(name)
+    }
 
-    var expanded by remember { mutableStateOf(false) }
+    var assetCategory by remember {
+        mutableStateOf(category)
+    }
 
-    var statusExpanded by remember {
+    var serialNumber by remember {
+        mutableStateOf(serial)
+    }
+
+    var assetLocation by remember {
+        mutableStateOf(location)
+    }
+
+    var assetNotes by remember {
+        mutableStateOf(notes)
+    }
+
+    var assetStatus by remember {
+        mutableStateOf(status)
+    }
+
+    var categoryExpanded by remember {
         mutableStateOf(false)
     }
 
-    var status by remember {
-        mutableStateOf("Working")
+    var statusExpanded by remember {
+        mutableStateOf(false)
     }
 
     val categories = listOf(
@@ -48,18 +71,17 @@ fun AddAssetScreen(navController: NavController) {
         "Broken"
     )
 
-    val snackbarHostState = remember {
-        SnackbarHostState()
-    }
-
-    val scope = rememberCoroutineScope()
-
     val db = FirebaseFirestore.getInstance()
 
     Scaffold(
 
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
+        topBar = {
+
+            TopAppBar(
+                title = {
+                    Text("Edit Asset")
+                }
+            )
         }
 
     ) { padding ->
@@ -73,27 +95,23 @@ fun AddAssetScreen(navController: NavController) {
         ) {
 
             Text(
-                text = "Register new asset",
+                text = "Update Asset Details",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Add an item to your school's inventory.",
-                style = MaterialTheme.typography.bodyMedium,
+                text = "Modify your asset information.",
                 color = Color.Gray
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 4.dp
-                )
+                shape = RoundedCornerShape(24.dp)
             ) {
 
                 Column(
@@ -103,7 +121,7 @@ fun AddAssetScreen(navController: NavController) {
                 ) {
 
                     Text(
-                        text = "Item name *",
+                        text = "Asset Name",
                         fontWeight = FontWeight.SemiBold
                     )
 
@@ -113,9 +131,6 @@ fun AddAssetScreen(navController: NavController) {
                         value = assetName,
                         onValueChange = {
                             assetName = it
-                        },
-                        placeholder = {
-                            Text("e.g. Microscope")
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp)
@@ -131,19 +146,19 @@ fun AddAssetScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     ExposedDropdownMenuBox(
-                        expanded = expanded,
+                        expanded = categoryExpanded,
                         onExpandedChange = {
-                            expanded = !expanded
+                            categoryExpanded = !categoryExpanded
                         }
                     ) {
 
                         OutlinedTextField(
-                            value = category,
+                            value = assetCategory,
                             onValueChange = {},
                             readOnly = true,
                             trailingIcon = {
                                 ExposedDropdownMenuDefaults.TrailingIcon(
-                                    expanded = expanded
+                                    expanded = categoryExpanded
                                 )
                             },
                             modifier = Modifier
@@ -153,22 +168,22 @@ fun AddAssetScreen(navController: NavController) {
                         )
 
                         ExposedDropdownMenu(
-                            expanded = expanded,
+                            expanded = categoryExpanded,
                             onDismissRequest = {
-                                expanded = false
+                                categoryExpanded = false
                             }
                         ) {
 
-                            categories.forEach { selectedCategory ->
+                            categories.forEach { option ->
 
                                 DropdownMenuItem(
                                     text = {
-                                        Text(selectedCategory)
+                                        Text(option)
                                     },
                                     onClick = {
 
-                                        category = selectedCategory
-                                        expanded = false
+                                        assetCategory = option
+                                        categoryExpanded = false
                                     }
                                 )
                             }
@@ -178,7 +193,7 @@ fun AddAssetScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Text(
-                        text = "Serial number",
+                        text = "Serial Number",
                         fontWeight = FontWeight.SemiBold
                     )
 
@@ -188,9 +203,6 @@ fun AddAssetScreen(navController: NavController) {
                         value = serialNumber,
                         onValueChange = {
                             serialNumber = it
-                        },
-                        placeholder = {
-                            Text("Optional")
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp)
@@ -206,12 +218,9 @@ fun AddAssetScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = location,
+                        value = assetLocation,
                         onValueChange = {
-                            location = it
-                        },
-                        placeholder = {
-                            Text("e.g. Science Lab — Cabinet 3")
+                            assetLocation = it
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp)
@@ -234,7 +243,7 @@ fun AddAssetScreen(navController: NavController) {
                     ) {
 
                         OutlinedTextField(
-                            value = status,
+                            value = assetStatus,
                             onValueChange = {},
                             readOnly = true,
                             trailingIcon = {
@@ -263,7 +272,7 @@ fun AddAssetScreen(navController: NavController) {
                                     },
                                     onClick = {
 
-                                        status = option
+                                        assetStatus = option
                                         statusExpanded = false
                                     }
                                 )
@@ -281,12 +290,9 @@ fun AddAssetScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = notes,
+                        value = assetNotes,
                         onValueChange = {
-                            notes = it
-                        },
-                        placeholder = {
-                            Text("Any extra detail...")
+                            assetNotes = it
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -299,46 +305,27 @@ fun AddAssetScreen(navController: NavController) {
                     Button(
                         onClick = {
 
-                            val asset = AssetData(
+                            val updatedAsset = hashMapOf(
 
-                                assetName = assetName,
+                                "assetName" to assetName,
 
-                                category = category,
+                                "category" to assetCategory,
 
-                                serialNumber = serialNumber,
+                                "serialNumber" to serialNumber,
 
-                                location = location,
+                                "location" to assetLocation,
 
-                                notes = notes,
+                                "notes" to assetNotes,
 
-                                status = status
+                                "status" to assetStatus
                             )
 
                             db.collection("assets")
-                                .add(asset)
+                                .document(assetId)
+                                .update(updatedAsset as Map<String, Any>)
                                 .addOnSuccessListener {
 
-                                    scope.launch {
-
-                                        snackbarHostState.showSnackbar(
-                                            "Asset Saved Successfully"
-                                        )
-                                    }
-
-                                    assetName = ""
-                                    serialNumber = ""
-                                    location = ""
-                                    notes = ""
-                                    status = "Working"
-                                }
-                                .addOnFailureListener {
-
-                                    scope.launch {
-
-                                        snackbarHostState.showSnackbar(
-                                            "Failed to Save Asset"
-                                        )
-                                    }
+                                    navController.popBackStack()
                                 }
                         },
                         modifier = Modifier
@@ -347,12 +334,8 @@ fun AddAssetScreen(navController: NavController) {
                         shape = RoundedCornerShape(18.dp)
                     ) {
 
-                        Text(
-                            text = "Save Asset"
-                        )
+                        Text("Update Asset")
                     }
-
-                    Spacer(modifier = Modifier.height(20.dp))
                 }
             }
         }
